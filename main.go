@@ -1,0 +1,5 @@
+package Toukyou
+
+func main() {
+
+}
