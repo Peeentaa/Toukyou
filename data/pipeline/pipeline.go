@@ -1,26 +1,53 @@
 package pipeline
 
-type stage struct {
-	stage func()
+import (
+	"sync"
+	"time"
+)
+
+type Stage struct {
+	Stage func()
 }
 
-type pipeline struct {
-	stages []stage
+type Pipeline struct {
+	Stages []Stage
 }
 
-func newPipeline() *pipeline {
-	return &pipeline{
-		stages: []stage{},
+func NewPipeline() *Pipeline {
+	return &Pipeline{
+		Stages: []Stage{},
 	}
 }
 
-func (p *pipeline) addStage(s stage) {
-	p.stages = append(p.stages, s)
+func (p *Pipeline) AddStage(s Stage) {
+	p.Stages = append(p.Stages, s)
 }
 
-func (p *pipeline) run() {
+func (p *Pipeline) Run() {
+	ticker := time.NewTicker(5 * time.Second)
 
-	for _, s := range p.stages {
-		s.stage()
+	runStages := func() {
+		for _, s := range p.Stages {
+			s.Stage()
+		}
 	}
+
+	done := make(chan struct{})
+	var wg sync.WaitGroup
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+
+		for {
+			select {
+			case <-ticker.C:
+				runStages()
+			case <-done:
+				return
+			}
+		}
+	}()
+
+	wg.Wait()
 }
