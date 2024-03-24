@@ -1,12 +1,15 @@
 package pipeline
 
 import (
+	"github.com/fatih/color"
 	"sync"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type Stage struct {
-	Stage func()
+	StageFunc func()
 }
 
 type Pipeline struct {
@@ -14,6 +17,7 @@ type Pipeline struct {
 }
 
 func NewPipeline() *Pipeline {
+	log.Info("Initializing new pipeline")
 	return &Pipeline{
 		Stages: []Stage{},
 	}
@@ -24,27 +28,27 @@ func (p *Pipeline) AddStage(s Stage) {
 }
 
 func (p *Pipeline) Run() {
+	log.Info("Starting pipeline execution")
 	ticker := time.NewTicker(5 * time.Second)
+	defer ticker.Stop()
 
 	runStages := func() {
-		for _, s := range p.Stages {
-			s.Stage()
+		for index, s := range p.Stages {
+			color.Yellow("Executing stage....")
+			s.StageFunc()
+			log.Infof("Executed stage: %d", index+1)
 		}
 	}
 
-	done := make(chan struct{})
 	var wg sync.WaitGroup
-
 	wg.Add(1)
+
 	go func() {
 		defer wg.Done()
-
 		for {
 			select {
 			case <-ticker.C:
 				runStages()
-			case <-done:
-				return
 			}
 		}
 	}()

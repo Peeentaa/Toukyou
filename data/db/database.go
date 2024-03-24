@@ -2,16 +2,12 @@ package db
 
 import (
 	"database/sql"
+	"fmt"
 	"os"
 	"path/filepath"
 
 	_ "github.com/mattn/go-sqlite3"
 )
-
-type stockData struct {
-	symbol string
-	price  float32
-}
 
 func OpenDatabase() (*sql.DB, error) {
 	ex, err := os.Executable()
@@ -39,6 +35,10 @@ func OpenDatabase() (*sql.DB, error) {
 	return db, nil
 }
 
-func InsertStockData() {
+func GetStockData() {
+	fmt.Println("Get Stock Data")
+}
 
+func InsertStockData() {
+	fmt.Println("Insert Stock Data")
 }

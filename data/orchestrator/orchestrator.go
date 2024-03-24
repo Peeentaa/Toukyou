@@ -2,24 +2,28 @@ package orchestrator
 
 import (
 	"toukyou/data/pipeline"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type Orchestrator struct {
-	pipelines []pipeline.Pipeline
+	Pipelines []pipeline.Pipeline
 }
 
 func NewOrchestrator() *Orchestrator {
 	return &Orchestrator{
-		pipelines: []pipeline.Pipeline{},
+		Pipelines: []pipeline.Pipeline{},
 	}
 }
 
 func (o *Orchestrator) AddPipeline(p pipeline.Pipeline) {
-	o.pipelines = append(o.pipelines, p)
+	o.Pipelines = append(o.Pipelines, p)
 }
 
 func (o *Orchestrator) Deploy() {
-	for _, p := range o.pipelines {
+	log.Info("Deploying pipelines")
+	for index, p := range o.Pipelines {
+		log.Infof("Deploying pipeline: %d", index+1)
 		p.Run()
 	}
 }
