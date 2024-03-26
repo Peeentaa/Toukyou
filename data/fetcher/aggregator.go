@@ -1,6 +1,9 @@
 package fetcher
 
-import "time"
+import (
+	"time"
+	"toukyou/data/model"
+)
 
 type rawStockSymbol struct {
 	Currency      string
@@ -37,8 +40,8 @@ type transformedStockQuote struct {
 	date          time.Time
 }
 
-func transformSymbol(symbol rawStockSymbol) transformedStockSymbol {
-	stockSymbol := transformedStockSymbol{
+func transformSymbol(symbol rawStockSymbol) model.StockSymbol {
+	stockSymbol := model.StockSymbol{
 		Currency: symbol.Currency,
 		Symbol:   symbol.Symbol,
 		Type:     symbol.Type,
@@ -47,15 +50,16 @@ func transformSymbol(symbol rawStockSymbol) transformedStockSymbol {
 	return stockSymbol
 }
 
-func transformStockQuote(quote rawStockQuote) transformedStockQuote {
-	stockQuote := transformedStockQuote{
-		currentPrice:  quote.C,
-		change:        quote.H,
-		percentChange: quote.L,
-		highPrice:     quote.O,
-		lowePrice:     quote.Pc,
-		previousPrice: quote.T,
-		date:          time.Now(),
+func transformStockQuote(quote rawStockQuote, stocksymbol string) model.StockQuote {
+	stockQuote := model.StockQuote{
+		CurrentPrice:  quote.C,
+		Change:        quote.H,
+		PercentChange: quote.L,
+		HighPrice:     quote.O,
+		LowPrice:      quote.Pc,
+		PreviousPrice: quote.T,
+		Date:          time.Now(),
+		StockSymbol:   stocksymbol,
 	}
 	return stockQuote
 }

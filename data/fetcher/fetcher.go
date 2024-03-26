@@ -1,32 +1,48 @@
 package fetcher
 
-func GetStockData() {
+import (
+	"fmt"
+	"toukyou/data/db"
+)
+
+func FetchStockData() {
 	fetchStockSymbols()
 	fetchStockQuotes()
 }
 
-func fetchStockQuotes() []transformedStockQuote {
-	stockQuote := rawStockQuote{
-		C:  123,
-		H:  123,
-		L:  13123,
-		O:  12313,
-		Pc: 13123,
-		T:  131232,
+func fetchStockQuotes() {
+
+	stockSymbols := db.GetStockSymbols()
+
+	fmt.Println(stockSymbols)
+	for _, s := range stockSymbols {
+		stockQuote := rawStockQuote{
+			C:  123,
+			H:  123,
+			L:  13123,
+			O:  12313,
+			Pc: 13123,
+			T:  131232,
+		}
+		rawStockQuotes := []rawStockQuote{stockQuote}
+
+		for _, q := range rawStockQuotes {
+			db.InsertStockQuote(transformStockQuote(q, s.Symbol))
+		}
 	}
-	rawStockQuotes := []rawStockQuote{stockQuote}
-
-	var transformedStockQuotes []transformedStockQuote
-
-	for _, q := range rawStockQuotes {
-		transformedStockQuotes = append(transformedStockQuotes, transformStockQuote(q))
-	}
-
-	return transformedStockQuotes
 }
 
-func fetchStockSymbols() []transformedStockSymbol {
+func fetchStockSymbols() {
 	symbol := rawStockSymbol{
+		Currency:      "USD",
+		Description:   "dasd",
+		DisplaySymbol: "MSFT",
+		Figi:          "asdasd",
+		Mic:           "asdasd",
+		Symbol:        "MSFT",
+		Type:          "Common",
+	}
+	symbol1 := rawStockSymbol{
 		Currency:      "USD",
 		Description:   "dasd",
 		DisplaySymbol: "AAPL",
@@ -35,13 +51,10 @@ func fetchStockSymbols() []transformedStockSymbol {
 		Symbol:        "AAPL",
 		Type:          "Common",
 	}
-	rawStockSymbols := []rawStockSymbol{symbol}
-
-	var transformedStockSymbols []transformedStockSymbol
+	rawStockSymbols := []rawStockSymbol{symbol, symbol1}
 
 	for _, s := range rawStockSymbols {
-		transformedStockSymbols = append(transformedStockSymbols, transformSymbol(s))
+		db.InsertStockSymbol(transformSymbol(s))
 	}
 
-	return transformedStockSymbols
 }

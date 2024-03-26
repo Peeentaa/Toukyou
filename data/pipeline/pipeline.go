@@ -1,7 +1,6 @@
 package pipeline
 
 import (
-	"github.com/fatih/color"
 	"sync"
 	"time"
 
@@ -27,18 +26,20 @@ func (p *Pipeline) AddStage(s Stage) {
 	p.Stages = append(p.Stages, s)
 }
 
-func (p *Pipeline) Run() {
+func (p *Pipeline) Run() error {
 	log.Info("Starting pipeline execution")
 	ticker := time.NewTicker(5 * time.Second)
 	defer ticker.Stop()
 
 	runStages := func() {
 		for index, s := range p.Stages {
-			color.Yellow("Executing stage....")
-			s.StageFunc()
-			log.Infof("Executed stage: %d", index+1)
+			log.Infof("Executing stage: %d", index+1)
+			s.StageFunc() // Execute the stage function
 		}
+		return
 	}
+
+	runStages()
 
 	var wg sync.WaitGroup
 	wg.Add(1)
@@ -54,4 +55,6 @@ func (p *Pipeline) Run() {
 	}()
 
 	wg.Wait()
+
+	return nil
 }

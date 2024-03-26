@@ -11,7 +11,10 @@ import (
 )
 
 func main() {
-	color.New(color.FgRed, color.Bold).Println("\n___________           __                         \n\\__    ___/___  __ __|  | _____.__. ____  __ __  \n  |    | /  _ \\|  |  \\  |/ <   |  |/  _ \\|  |  \\ \n  |    |(  <_> )  |  /    < \\___  (  <_> )  |  / \n  |____| \\____/|____/|__|_ \\/ ____|\\____/|____/  \n                          \\/\\/                   \n")
+	_, err := color.New(color.FgRed, color.Bold).Println("\n___________           __                         \n\\__    ___/___  __ __|  | _____.__. ____  __ __  \n  |    | /  _ \\|  |  \\  |/ <   |  |/  _ \\|  |  \\ \n  |    |(  <_> )  |  /    < \\___  (  <_> )  |  / \n  |____| \\____/|____/|__|_ \\/ ____|\\____/|____/  \n                          \\/\\/                   \n")
+	if err != nil {
+		return
+	}
 
 	// Initialize and open database
 	if _, err := db.OpenDatabase(); err != nil {
@@ -23,7 +26,8 @@ func main() {
 	p := pipeline.NewPipeline()
 
 	sI := pipeline.Stage{StageFunc: func() {
-		fetcher.GetStockData()
+		fetcher.FetchStockData()
+
 	}}
 
 	s1 := pipeline.Stage{StageFunc: func() {
@@ -39,6 +43,6 @@ func main() {
 	// Add pipeline to orchestrator
 	o.AddPipeline(*p)
 
-	// Deploy orchestrator
+	// Deploy pipelines
 	o.Deploy()
 }
